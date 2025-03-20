@@ -5,12 +5,14 @@ import { logger } from '@/utils/Logger.js';
 import { Pop } from '@/utils/Pop.js';
 import { computed, onMounted } from 'vue';
 import HouseListing from '@/components/HouseListing.vue';
+import HouseForm from '@/components/HouseForm.vue';
 
 onMounted(() => {
   getAllHouses()
 })
 
 const houses = computed(() => AppState.houses)
+const account = computed(() => AppState.account)
 
 async function getAllHouses() {
   try {
@@ -32,6 +34,13 @@ async function getAllHouses() {
         <div class="text-center">
           <h1 class="display-3">Houses</h1>
         </div>
+      </div>
+    </div>
+  </section>
+  <section v-if="account" class="container">
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <HouseForm />
       </div>
     </div>
   </section>
