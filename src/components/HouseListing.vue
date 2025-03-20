@@ -1,6 +1,9 @@
 <script setup>
 import { AppState } from '@/AppState.js';
 import { House } from '@/models/House.js';
+import { housesService } from '@/services/HousesService.js';
+import { logger } from '@/utils/Logger.js';
+import { Pop } from '@/utils/Pop.js';
 import { computed } from 'vue';
 
 defineProps({
@@ -9,6 +12,18 @@ defineProps({
 
 const account = computed(() => AppState.account)
 
+async function deleteHouse(houseProp) {
+  try {
+    const confirmed = await Pop.confirm(`Are you sure you want to delete ${houseProp.year} ${houseProp.bedrooms} Bed ${houseProp.bathrooms} Bath?`, "This action cannot be undone.", "Yes, delete it", "No, don't delete it")
+    if (!confirmed) {
+      return
+    }
+    await housesService.deleteHouse(houseProp.id)
+  }
+  catch (error) {
+    Pop.error(error);
+  }
+}
 
 </script>
 
@@ -31,7 +46,8 @@ const account = computed(() => AppState.account)
         </div>
         <div class="d-flex justify-content-between align-items-center">
           <div>
-            <button v-if="houseProp.creatorId == account?.id" type="button">Delete House</button>
+            <button v-if="houseProp.creatorId == account?.id" @click="deleteHouse(houseProp)" type="button"
+              class="btn btn-danger">Delete House</button>
           </div>
           <div class="d-flex align-items-center gap-3">
             <p class="mb-0">{{ houseProp.creator.name }}</p>
@@ -48,7 +64,6 @@ const account = computed(() => AppState.account)
 <style lang="scss" scoped>
 img {
   height: 45dvh;
-  // width: 100%;
   object-fit: cover;
 }
 
@@ -56,6 +71,5 @@ img {
   height: 3.7em;
   aspect-ratio: 1/1;
   border-radius: 50%;
-
 }
 </style>
